@@ -12,3 +12,4 @@ The model describes a gym: clients, trainers, group training sessions, membershi
 - `model.mmd`: ER model (Mermaid `erDiagram`)
 - `ai/`: AI prompts used to generate the model
 - `DEFENSE.md`: defense notes
+- `erd.png`: rendered ER diagram

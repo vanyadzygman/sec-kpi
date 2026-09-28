@@ -1,0 +1,52 @@
+erDiagram
+    Client ||--o{ Booking : has
+    TrainingSession ||--o{ Booking : has
+    Client ||--o{ Subscription : buys
+    MembershipPlan ||--o{ Subscription : "is bought in"
+    Trainer }|--o{ TrainingSession : leads
+
+    Client {
+        int id PK
+        string fullName
+        string email UK
+        string phone
+        date birthDate
+    }
+
+    Trainer {
+        int id PK
+        string fullName
+        string specialization
+    }
+
+    TrainingSession {
+        int id PK
+        string title
+        datetime startsAt
+        int durationMin
+        int capacity
+    }
+
+    MembershipPlan {
+        int id PK
+        string name
+        int durationDays
+        decimal price
+    }
+
+    Booking {
+        int id PK
+        int clientId FK
+        int sessionId FK
+        datetime bookedAt
+        boolean attended
+    }
+
+    Subscription {
+        int id PK
+        int clientId FK
+        int planId FK
+        date startDate
+        date endDate
+        decimal paidAmount
+    }
