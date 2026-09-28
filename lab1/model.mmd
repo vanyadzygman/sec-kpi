@@ -1,8 +1,12 @@
 erDiagram
-    Client ||--o{ Booking : has
-    TrainingSession ||--o{ Booking : has
+    %% AC-9: пара (clientId, sessionId) у Booking унікальна
+    %% AC-9: кількість записів Booking на заняття не перевищує TrainingSession.capacity
+    %% AC-9: Subscription.endDate не раніше Subscription.startDate
+
+    Client ||--o{ Booking : makes
+    TrainingSession ||--o{ Booking : receives
     Client ||--o{ Subscription : buys
-    MembershipPlan ||--o{ Subscription : "is bought in"
+    MembershipPlan ||--o{ Subscription : "is purchased as"
     Trainer }|--o{ TrainingSession : leads
 
     Client {
