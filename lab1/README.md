@@ -10,6 +10,7 @@ The model describes a gym: clients, trainers, group training sessions, membershi
 
 - `spec.md`: entities, attributes, relationships and acceptance criteria (in words)
 - `model.mmd`: ER model (Mermaid `erDiagram`)
-- `ai/`: AI prompts used to generate the model
-- `DEFENSE.md`: defense notes
 - `erd.png`: rendered ER diagram
+- `adr/`: architecture decision records (MADR), e.g. the trainer–session relationship
+- `ai/`: AI prompts and raw AI responses used to generate the model
+- `DEFENSE.md`: defense notes
