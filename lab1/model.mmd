@@ -1,7 +1,8 @@
 erDiagram
-    %% AC-9: пара (clientId, sessionId) у Booking унікальна
-    %% AC-9: кількість записів Booking на заняття не перевищує TrainingSession.capacity
-    %% AC-9: Subscription.endDate не раніше Subscription.startDate
+    %% Rule 1: pair (clientId, sessionId) in Booking is unique
+    %% Rule 2: number of Booking per TrainingSession does not exceed capacity
+    %% Rule 3: endDate is not earlier than startDate
+    %% Rule 4: Subscription periods (startDate-endDate) of one Client do not overlap: at most one active Subscription at a time
 
     Client ||--o{ Booking : makes
     TrainingSession ||--o{ Booking : receives
