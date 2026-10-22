@@ -46,10 +46,19 @@ Feature: Купівля абонемента, оплата, листи-підт�
     When Payment Gateway підтверджує оплату
     Then створений Subscription лишається чинним
 
-  # Припущення: UC-13 описує створення типу абонемента, а зміну durationDays у існуючого
-  # MembershipPlan виконує Administrator. У вимогах це окремо не названо.
-  @REQ-19 @UC-13
+  @REQ-19 @UC-07
   Scenario: SC-19 Зміна durationDays не змінює endDate існуючого Subscription
     Given у Client є Subscription з endDate 2026-11-20, куплений за MembershipPlan з durationDays 30
     When Administrator змінює durationDays цього MembershipPlan на 60
     Then endDate цього Subscription лишається 2026-11-20
+
+    @REQ-21 @UC-13
+  Scenario: SC-28 Успішне створення типу абонемента
+    When Administrator створює MembershipPlan з name "Місячний", durationDays 30 і price 800
+    Then система зберігає MembershipPlan з name "Місячний", durationDays 30 і price 800
+
+  # Припущення: REQ-21 вимагає durationDays > 0 в умові WHEN, окремої вимоги про текст відмови немає.
+  @REQ-21 @UC-13
+  Scenario: SC-29 Тип абонемента з durationDays 0 не створюється
+    When Administrator створює MembershipPlan з name "Нульовий", durationDays 0 і price 800
+    Then система не зберігає MembershipPlan з name "Нульовий"

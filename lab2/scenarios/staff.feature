@@ -15,7 +15,7 @@ Feature: Створення заняття, список записаних і �
 
   # Припущення: REQ-15 записує умови durationMin > 0 і capacity > 0 лише для успішного збереження,
   # а окремої вимоги про відмову при capacity 0 немає. Тут прийнято, що система відхиляє таке заняття.
-  @REQ-15 @UC-10
+  @REQ-22 @UC-10
   Scenario: SC-22 Відмова в створенні заняття з capacity 0
     Given Administrator обрав Trainer
     When Administrator створює TrainingSession з capacity 0
