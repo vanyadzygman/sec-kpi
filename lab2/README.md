@@ -9,6 +9,10 @@ Structured requirements for the gym system: EARS requirements, user stories, use
 ## Files:
 
 - `spec.md`: intent, actors, definitions and acceptance criteria
-- `requirements/`: EARS requirements, user stories, use cases
+- `requirements/`: EARS requirements, user stories, use cases, traceability matrix
+- `scenarios/`: Gherkin scenarios (`.feature`)
+- `model/`: use case diagram (PlantUML source and PNG render)
 - `adr/`: architecture decision records (MADR)
 - `ai/`: AI prompts and raw AI responses
+- `audit.md`: audit of discrepancies and AI errors
+- `DEFENSE.md`: defense notes
