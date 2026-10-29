@@ -12,6 +12,7 @@
 | ------ | ------------------- | ------------------------------------------------- |
 | Lab 1  | `lab1-er-model`     | Домен і модель даних (ER, Mermaid)                |
 | Lab 2  | `lab2-requirements` | Вимоги та Use Cases (EARS, user stories, Gherkin) |
+| Lab 3  | `lab3-sequence`     | Взаємодія (Sequence Diagram, Mermaid)             |
 
 ## Структура
 
@@ -19,6 +20,7 @@
 sec-kpi/
 ├── lab1/                ← Lab 1 (гілка lab1-er-model)
 ├── lab2/                ← Lab 2 (гілка lab2-requirements)
+├── lab3/                ← Lab 3 (гілка lab3-sequence)
 ├── LICENSE
 └── README.md
 ```
