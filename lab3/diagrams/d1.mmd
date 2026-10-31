@@ -13,12 +13,9 @@ sequenceDiagram
     B-->>-BS: false
     BS->>+TS: freeSeats(sessionId)
     TS-->>-BS: 1
-    alt усі перевірки пройдено
+    opt усі перевірки пройдено
         BS->>+B: create(clientId, sessionId)
         B-->>-BS: bookingId
         BS-->>C: BookingConfirmed(bookingId)
-    else будь-яка перевірка не пройдена
-        BS-->>C: Rejected(reason)
-        Note over BS,C: окремі відмови показано на D4-D7
     end
     deactivate BS

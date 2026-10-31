@@ -8,7 +8,7 @@ sequenceDiagram
     BS->>+Sub: hasActive(clientId)
     Note right of Sub: SC-06, у клієнта немає жодного Subscription
     Sub-->>-BS: false
-    alt hasActive = false
+    opt hasActive = false
         BS-->>C: Rejected(NO_ACTIVE_SUBSCRIPTION)
     end
     deactivate BS

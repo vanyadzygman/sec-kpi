@@ -10,7 +10,7 @@ sequenceDiagram
     Sub-->>-BS: true
     BS->>+B: exists(clientId, sessionId)
     B-->>-BS: true
-    alt exists = true
+    opt exists = true
         BS-->>C: Rejected(ALREADY_BOOKED)
     end
     deactivate BS

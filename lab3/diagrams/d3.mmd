@@ -15,13 +15,12 @@ sequenceDiagram
     B-->>-BS: false
     BS->>+TS: freeSeats(sessionId)
     TS-->>-BS: 1
-    alt усі перевірки пройдено
+    opt усі перевірки пройдено
         BS->>+B: create(clientId, sessionId)
         B-->>-BS: bookingId
         BS->>+CE: getEmail(clientId)
         CE-->>-BS: email
-        BS->>ES: sendConfirmation(email)
-        activate ES
+        BS->>+ES: sendConfirmation(email)
         alt лист надіслано
             ES-->>BS: SENT
             Note over BS,ES: інший сценарій, див. D2
@@ -31,7 +30,5 @@ sequenceDiagram
         end
         deactivate ES
         BS-->>C: BookingConfirmed(bookingId)
-    else будь-яка перевірка не пройдена
-        BS-->>C: Rejected(reason)
     end
     deactivate BS

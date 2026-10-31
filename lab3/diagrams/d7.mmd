@@ -13,7 +13,7 @@ sequenceDiagram
     B-->>-BS: false
     BS->>+TS: freeSeats(sessionId)
     TS-->>-BS: 0
-    alt freeSeats = 0
+    opt freeSeats = 0
         BS-->>C: Rejected(NO_FREE_SEATS)
     end
     deactivate BS
