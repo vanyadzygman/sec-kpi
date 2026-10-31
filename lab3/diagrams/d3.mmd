@@ -1,0 +1,37 @@
+sequenceDiagram
+    actor C as Client (actor)
+    participant BS as BookingService
+    participant Sub as Subscription
+    participant B as Booking
+    participant TS as TrainingSession
+    participant CE as Client (сутність)
+    participant ES as Email Service
+
+    C->>BS: bookSession(clientId, sessionId)
+    activate BS
+    BS->>+Sub: hasActive(clientId)
+    Sub-->>-BS: true
+    BS->>+B: exists(clientId, sessionId)
+    B-->>-BS: false
+    BS->>+TS: freeSeats(sessionId)
+    TS-->>-BS: 1
+    alt усі перевірки пройдено
+        BS->>+B: create(clientId, sessionId)
+        B-->>-BS: bookingId
+        BS->>+CE: getEmail(clientId)
+        CE-->>-BS: email
+        BS->>ES: sendConfirmation(email)
+        activate ES
+        alt лист надіслано
+            ES-->>BS: SENT
+            Note over BS,ES: інший сценарій, див. D2
+        else лист не вдалося
+            ES-->>BS: FAILED
+            Note over BS,B: SC-17, Booking лишається чинним (REQ-14)
+        end
+        deactivate ES
+        BS-->>C: BookingConfirmed(bookingId)
+    else будь-яка перевірка не пройдена
+        BS-->>C: Rejected(reason)
+    end
+    deactivate BS
