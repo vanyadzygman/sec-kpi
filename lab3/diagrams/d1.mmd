@@ -1,0 +1,21 @@
+sequenceDiagram
+    actor C as Client (actor)
+    participant BS as BookingService
+    participant Sub as Subscription
+    participant B as Booking
+    participant TS as TrainingSession
+
+    C->>BS: bookSession(clientId, sessionId)
+    activate BS
+    BS->>+Sub: hasActive(clientId)
+    Sub-->>-BS: true
+    BS->>+B: exists(clientId, sessionId)
+    B-->>-BS: false
+    BS->>+TS: freeSeats(sessionId)
+    TS-->>-BS: 1
+    opt усі перевірки пройдено
+        BS->>+B: create(clientId, sessionId)
+        B-->>-BS: bookingId
+        BS-->>C: BookingConfirmed(bookingId)
+    end
+    deactivate BS
