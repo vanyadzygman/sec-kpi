@@ -1,11 +1,19 @@
 @startuml
+skinparam dpi 150
+skinparam defaultFontSize 12
+skinparam wrapWidth 200
+
 |Client|
 start
 :Обирає MembershipPlan;
 
 |System|
-:Перевіряє Subscription.hasActive(clientId);
-if (hasActive(clientId)?) then (true)
+:Перевіряє hasActive(clientId);
+note right
+  припущення: у Client немає активного
+  Subscription (передумова SC-13)
+end note
+if (hasActive?) then (true)
   :Повертає Rejected(ACTIVE_SUBSCRIPTION_EXISTS);
   note right: припущення, немає у вимогах lab2
   |Client|
@@ -20,20 +28,28 @@ endif
 |Payment Gateway|
 :Обробляє оплату;
 
+|System|
 switch (Результат оплати?)
 case (підтверджено)
-  |System|
-  :Створює Subscription\nstartDate = поточна дата\nendDate = startDate + durationDays днів\npaidAmount = підтверджена сума;
+  :Створює Subscription;
+  note right
+    startDate = поточна дата
+    endDate = startDate + durationDays днів
+    paidAmount = підтверджена сума
+  end note
   fork
-    |System|
     :getEmail(clientId);
     |Email Service|
     :sendConfirmation(email);
-  fork again
     |System|
+    if (лист надіслано?) then (так)
+      :Фіксує результат листа;
+    else (ні)
+      :Фіксує збій листа;
+    endif
+  fork again
     :Готує PurchaseConfirmed(subscriptionId);
   end fork
-  |System|
   :Повертає PurchaseConfirmed(subscriptionId);
   |Client|
   :Отримує PurchaseConfirmed(subscriptionId);
