@@ -12,3 +12,5 @@ Activity diagram of one business process, the purchase of a membership plan (UC-
 - `diagrams/`: activity diagram (PlantUML source and PNG render)
 - `adr/`: architecture decision records (MADR)
 - `ai/`: AI prompts and raw AI responses
+- `audit.md`: audit of discrepancies and AI errors
+- `DEFENSE.md`: defense notes
