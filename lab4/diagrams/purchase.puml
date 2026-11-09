@@ -1,0 +1,73 @@
+@startuml
+skinparam dpi 150
+skinparam defaultFontSize 12
+skinparam wrapWidth 200
+
+|Client|
+start
+:Обирає MembershipPlan;
+
+|System|
+:Перевіряє hasActive(clientId);
+note right
+  припущення: у Client немає активного
+  Subscription (передумова SC-13)
+end note
+if (hasActive?) then (true)
+  :Повертає Rejected(ACTIVE_SUBSCRIPTION_EXISTS);
+  note right: припущення, немає у вимогах lab2
+  |Client|
+  :Отримує Rejected(ACTIVE_SUBSCRIPTION_EXISTS);
+  stop
+else (false)
+endif
+
+|System|
+:Надсилає запит на оплату суми price;
+
+|Payment Gateway|
+:Обробляє оплату;
+
+|System|
+switch (Результат оплати?)
+case (підтверджено)
+  :Створює Subscription;
+  note right
+    startDate = поточна дата
+    endDate = startDate + durationDays днів
+    paidAmount = підтверджена сума
+  end note
+  fork
+    :getEmail(clientId);
+    |Email Service|
+    :sendConfirmation(email);
+    |System|
+    if (лист надіслано?) then (так)
+      :Фіксує результат листа;
+    else (ні)
+      :Фіксує збій листа;
+    endif
+  fork again
+    :Готує PurchaseConfirmed(subscriptionId);
+  end fork
+  :Повертає PurchaseConfirmed(subscriptionId);
+  |Client|
+  :Отримує PurchaseConfirmed(subscriptionId);
+  stop
+case (відхилено)
+  |System|
+  :Не створює Subscription;
+  :Повертає Rejected(PAYMENT_DECLINED);
+  |Client|
+  :Отримує Rejected(PAYMENT_DECLINED);
+  stop
+case (немає відповіді)
+  |System|
+  :Не створює Subscription;
+  :Повертає Rejected(PAYMENT_UNKNOWN);
+  note right: припущення, немає у вимогах lab2
+  |Client|
+  :Отримує Rejected(PAYMENT_UNKNOWN);
+  stop
+endswitch
+@enduml
