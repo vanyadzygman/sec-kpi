@@ -43,6 +43,9 @@
 - AC-10: результати збігаються з типами `PurchaseConfirmed(subscriptionId)` та `Rejected(reason)`, де `reason` це `ACTIVE_SUBSCRIPTION_EXISTS`, `PAYMENT_DECLINED` або `PAYMENT_UNKNOWN`.
 - AC-11: кожне розгалуження й результат, яких немає у вимогах lab2 (`ACTIVE_SUBSCRIPTION_EXISTS`, `PAYMENT_UNKNOWN`), позначено на діаграмі нотаткою «припущення, немає у вимогах lab2».
 - AC-12: прямого порівняння з Завданням 3 немає, бо sequence-діаграми lab3 описують лише UC-03. Узгодженість із lab3 перевіряється за спільними операціями (AC-8), а решта кроків за Gherkin lab2.
+- AC-13: розгалуження за результатом оплати розташоване в доріжці `System`. Доріжка `Payment Gateway` містить лише дію «Обробляє оплату».
+- AC-14: у гілці листа показано розгалуження за результатом `sendConfirmation`: надіслано або не вдалося. Обидва виходи ведуть до `join` і не змінюють `PurchaseConfirmed` (REQ-14, SC-18).
+- AC-15: шлях успішної покупки відповідає Gherkin SC-13 за передумови, що в `Client` немає активного `Subscription`. SC-13 цю передумову не фіксує, тому вона записана як припущення.
 
 ## Out of scope and assumptions
 
