@@ -13,13 +13,13 @@
 Шари: UI, API, сервіси, Data Access, база даних.
 
 - UI: `Web UI`, інтерфейс для `Client`, `Trainer` і `Administrator`.
-- API: `Gym API`, єдина точка входу для UI.
-- Сервіси:
+- API: `Gym API`, єдина точка входу для UI. Перевіряє роль актора (`Client`, `Trainer`, `Administrator`, `Staff`) перед викликом сервісу.
+- Сервіси (кожен UC має рівно одного виконавця):
   - `ClientService`: реєстрація й дані клієнта (UC-01, `getEmail`).
-  - `ScheduleService`: розклад, створення занять, вільні місця (UC-02, UC-10, `freeSeats`).
-  - `BookingService`: запис, скасування, список записаних, відмітка відвідування (UC-03, UC-05, UC-06, UC-11, UC-12).
-  - `SubscriptionService`: купівля абонемента, перевірка активного, типи абонементів (UC-04, UC-07, UC-13, `hasActive`).
-  - `PaymentAdapter`: обробка оплати через зовнішній шлюз (UC-08).
+  - `ScheduleService`: розклад, вільні місця, створення занять, перевірка тренера заняття (UC-02, UC-05, UC-10).
+  - `BookingService`: запис, скасування, список записаних, відмітка відвідування (UC-03, UC-06, UC-11, UC-12).
+  - `SubscriptionService`: купівля абонемента, перевірка активного, типи абонементів (UC-04, UC-07, UC-13).
+  - `PaymentAdapter`: обробка оплати через зовнішній шлюз, розпізнає відсутність відповіді (UC-08).
   - `NotificationService`: листи-підтвердження через зовнішній сервіс (UC-09).
 - Data Access (репозиторії):
   - `ClientRepository`: сутність `Client`.
@@ -34,27 +34,41 @@
 
 - `IGymApi`: надає `Gym API`, потребує `Web UI`.
 - `IClientService` (`register`, `getEmail`): надає `ClientService`, потребують `Gym API`, `BookingService`, `SubscriptionService`.
-- `IScheduleService` (`getSchedule`, `createSession`, `freeSeats`): надає `ScheduleService`, потребують `Gym API`, `BookingService`.
+- `IScheduleService` (`getSchedule`, `createSession` з переліком тренерів, `freeSeats`, `isTrainerOfSession`): надає `ScheduleService`, потребують `Gym API`, `BookingService`.
 - `IBookingService` (`bookSession`, `cancelBooking`, `getRoster`, `markAttendance`): надає `BookingService`, потребує `Gym API`.
 - `ISubscriptionService` (`purchase`, `hasActive`, `createPlan`): надає `SubscriptionService`, потребують `Gym API`, `BookingService`.
-- `IPaymentService` (`requestPayment`): надає `PaymentAdapter`, потребує `SubscriptionService`.
+- `IPaymentService` (`requestPayment`, повертає `Confirmed(amount)`, `Declined` або `NoResponse`): надає `PaymentAdapter`, потребує `SubscriptionService`.
 - `INotificationService` (`sendConfirmation`): надає `NotificationService`, потребують `BookingService`, `SubscriptionService`.
-- `IClientRepository`, `IScheduleRepository`, `IBookingRepository` (`exists`, `create`), `ISubscriptionRepository`: надають відповідні репозиторії, потребує відповідний сервіс.
+- `IClientRepository`: надає `ClientRepository`, потребує `ClientService`.
+- `IScheduleRepository`: надає `ScheduleRepository`, потребує `ScheduleService`.
+- `IBookingRepository` (`exists`, `create`, `countBySession`): надає `BookingRepository`, потребують `BookingService`, `ScheduleService`.
+- `ISubscriptionRepository`: надає `SubscriptionRepository`, потребує `SubscriptionService`.
 - `IPaymentGateway`: надає зовнішній `Payment Gateway`, потребує `PaymentAdapter`.
 - `IEmailSending`: надає зовнішній `Email Service`, потребує `NotificationService`.
 - `IDatabase`: надає `Gym Database`, потребують усі репозиторії.
 
+## Allowed dependencies between services
+
+Сервіси залежать лише від інтерфейсів, цикли заборонені. Дозволені залежності:
+
+- `BookingService` потребує `ISubscriptionService`, `IScheduleService`, `IClientService`, `INotificationService`, `IBookingRepository`.
+- `SubscriptionService` потребує `IClientService`, `IPaymentService`, `INotificationService`, `ISubscriptionRepository`.
+- `ScheduleService` потребує `IScheduleRepository`, `IBookingRepository` (лише `countBySession` для `freeSeats`).
+- `ClientService`, `PaymentAdapter`, `NotificationService` залежать лише від свого репозиторію або зовнішнього шлюзу.
+
 ## Traceability
 
 - Дані (lab1): усі 6 сутностей закріплені за репозиторіями, жодна не лишилась без компонента.
-- Взаємодія (lab3): виклики `BookingService.bookSession` лягають на інтерфейси так: `Subscription.hasActive` це `ISubscriptionService.hasActive`, `Booking.exists` це `IBookingRepository.exists`, `TrainingSession.freeSeats` це `IScheduleService.freeSeats`, `Client.getEmail` це `IClientService.getEmail`, `EmailService.sendConfirmation` це `INotificationService.sendConfirmation`.
-- Процес (lab4): купівля абонемента проходить через `SubscriptionService`, `PaymentAdapter` (оплата) і `NotificationService` (лист).
-- Вимоги (lab2): кожен UC-01…UC-13 має компонент-виконавця (див. розділ Modules).
+- Взаємодія (lab3): виклики `BookingService.bookSession` лягають на інтерфейси так: `Subscription.hasActive` це `ISubscriptionService.hasActive`, `Booking.exists` це `IBookingRepository.exists`, `TrainingSession.freeSeats` це `IScheduleService.freeSeats`, `Booking.create` це `IBookingRepository.create`, `Client.getEmail` це `IClientService.getEmail`, `EmailService.sendConfirmation` це `INotificationService.sendConfirmation`.
+- Процес (lab4): купівля абонемента проходить через `SubscriptionService`, `PaymentAdapter` (три результати оплати) і `NotificationService` (лист). `SubscriptionService` перетворює `Declined` на `Rejected(PAYMENT_DECLINED)`, а `NoResponse` на `Rejected(PAYMENT_UNKNOWN)`.
+- Вимоги (lab2): кожен UC-01…UC-13 має одного виконавця (див. розділ Modules). REQ-16 і REQ-18 виконують `createSession` і `isTrainerOfSession`.
 
 ## Out of scope and assumptions
 
-- Автентифікація й ролі доступу (OAuth, Identity): у вимогах lab2 цього немає, тому не моделюємо.
+- Автентифікація (OAuth, Identity): у вимогах lab2 цього немає. Роль актора перевіряє `Gym API`, а як актор підтверджує свою роль, не моделюємо.
 - SMS і інші канали повідомлень: у lab2 лише листи.
+- Одночасні записи на останнє місце: `freeSeats` і `create` лишаються окремими викликами (як у lab3), гонку не моделюємо й вважаємо, що правило `capacity` гарантує `Gym Database`.
+- Керування самими `Trainer` (створення, зміна): у lab2 немає UC.
 - Технології, розгортання, протоколи.
 
 ## Acceptance criteria
@@ -63,9 +77,11 @@
 - AC-2: межа системи `Gym System` показана явно, `Payment Gateway` і `Email Service` розташовані поза нею.
 - AC-3: усі компоненти з розділу Modules присутні на діаграмі, шари UI, API, сервіси, Data Access і база розрізнювані.
 - AC-4: кожен інтерфейс з розділу Interfaces має рівно одного провайдера (provided) і хоча б одного споживача (required), інтерфейсів без пари немає.
-- AC-5: залежності йдуть згори вниз за шарами (UI, API, сервіси, Data Access, база), сервіси залежать один від одного лише через інтерфейси, циклічних залежностей немає.
+- AC-5: залежності між шарами йдуть згори вниз (UI, API, сервіси, Data Access, база). Залежності сервіс-сервіс існують лише через інтерфейси й лише з розділу Allowed dependencies, циклів немає.
 - AC-6: кожна з 6 сутностей lab1 (`Client`, `Trainer`, `TrainingSession`, `MembershipPlan`, `Booking`, `Subscription`) закріплена за одним репозиторієм.
-- AC-7: кожен UC-01…UC-13 має компонент, що його виконує.
+- AC-7: кожен UC-01…UC-13 має рівно одного виконавця серед сервісів.
 - AC-8: операції на діаграмі збігаються з Завданням 3 і Завданням 4 символ у символ (`hasActive`, `exists`, `freeSeats`, `getEmail`, `sendConfirmation`, `bookSession`, `create`).
 - AC-9: зовнішні інтеграції збігаються з акторами-системами lab2: `Payment Gateway` і `Email Service`, інших немає.
 - AC-10: назви сутностей збігаються з `lab1/spec.md` символ у символ.
+- AC-11: результати `requestPayment` (`Confirmed`, `Declined`, `NoResponse`) покривають усі три виходи оплати із Завдання 4.
+- AC-12: кожне припущення, якого немає у вимогах lab2 (перевірка ролі в `Gym API`, `countBySession`, `isTrainerOfSession`), позначено на діаграмі нотаткою.
