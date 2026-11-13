@@ -1,0 +1,148 @@
+```plantuml
+@startuml
+skinparam linetype ortho
+skinparam defaultFontSize 12
+skinparam dpi 150
+top to bottom direction
+
+rectangle "Gym System" as GymSystem {
+
+  package "UI" as LayerUI {
+    component "Web UI" as WebUI
+  }
+
+  package "API" as LayerApi {
+    component "Gym API" as GymAPI
+    interface IGymApi
+  }
+
+  package "Services" as LayerServices {
+    component "ClientService" as ClientService
+    component "ScheduleService" as ScheduleService
+    component "BookingService" as BookingService
+    component "SubscriptionService" as SubscriptionService
+    component "PaymentAdapter" as PaymentAdapter
+    component "NotificationService" as NotificationService
+
+    interface IClientService
+    interface IScheduleService
+    interface IBookingService
+    interface ISubscriptionService
+    interface IPaymentService
+    interface INotificationService
+  }
+
+  package "Data Access" as LayerData {
+    component "ClientRepository" as ClientRepository
+    component "ScheduleRepository" as ScheduleRepository
+    component "BookingRepository" as BookingRepository
+    component "SubscriptionRepository" as SubscriptionRepository
+
+    interface IClientRepository
+    interface IScheduleRepository
+    interface IBookingRepository
+    interface ISubscriptionRepository
+  }
+
+  package "Database" as LayerDb {
+    database "Gym Database" as DB
+    interface IDatabase
+  }
+}
+
+component "Payment Gateway" as PG <<external>>
+component "Email Service" as ES <<external>>
+interface IPaymentGateway
+interface IEmailSending
+
+' provided interfaces
+GymAPI - IGymApi
+ClientService - IClientService
+ScheduleService - IScheduleService
+BookingService - IBookingService
+SubscriptionService - ISubscriptionService
+PaymentAdapter - IPaymentService
+NotificationService - INotificationService
+ClientRepository - IClientRepository
+ScheduleRepository - IScheduleRepository
+BookingRepository - IBookingRepository
+SubscriptionRepository - ISubscriptionRepository
+DB - IDatabase
+PG - IPaymentGateway
+ES - IEmailSending
+
+' required interfaces: UI and API
+WebUI ..> IGymApi
+GymAPI ..> IClientService
+GymAPI ..> IScheduleService
+GymAPI ..> IBookingService
+GymAPI ..> ISubscriptionService
+
+' required interfaces: services
+BookingService ..> ISubscriptionService
+BookingService ..> IScheduleService
+BookingService ..> IClientService
+BookingService ..> INotificationService
+BookingService ..> IBookingRepository
+
+SubscriptionService ..> IClientService
+SubscriptionService ..> IPaymentService
+SubscriptionService ..> INotificationService
+SubscriptionService ..> ISubscriptionRepository
+
+ScheduleService ..> IScheduleRepository
+ScheduleService ..> IBookingRepository
+
+ClientService ..> IClientRepository
+
+PaymentAdapter ..> IPaymentGateway
+NotificationService ..> IEmailSending
+
+' required interfaces: data access
+ClientRepository ..> IDatabase
+ScheduleRepository ..> IDatabase
+BookingRepository ..> IDatabase
+SubscriptionRepository ..> IDatabase
+
+' assumptions (AC-12) and operations
+note right of GymAPI
+  Перевіряє роль актора перед викликом сервісу.
+  припущення, немає у вимогах lab2
+end note
+
+note right of IScheduleService
+  getSchedule, createSession, freeSeats,
+  isTrainerOfSession
+  припущення (isTrainerOfSession),
+  немає у вимогах lab2
+end note
+
+note right of IBookingRepository
+  exists, create, countBySession
+  припущення (countBySession),
+  немає у вимогах lab2
+end note
+
+note right of IPaymentService
+  requestPayment повертає:
+  Confirmed(amount), Declined, NoResponse
+end note
+
+note right of ISubscriptionService
+  purchase, hasActive, createPlan
+end note
+
+note right of IClientService
+  register, getEmail
+end note
+
+note right of IBookingService
+  bookSession, cancelBooking,
+  getRoster, markAttendance
+end note
+
+note right of INotificationService
+  sendConfirmation
+end note
+@enduml
+```
