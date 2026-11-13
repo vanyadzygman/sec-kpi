@@ -4,18 +4,18 @@ skinparam defaultFontSize 12
 skinparam dpi 150
 top to bottom direction
 
-rectangle "Gym System" {
+rectangle "Gym System" as GymSystem {
 
-  package "UI" {
-    component "Web UI" as UI
+  package "UI" as LayerUI {
+    component "Web UI" as WebUI
   }
 
-  package "API" {
+  package "API" as LayerApi {
     component "Gym API" as GymAPI
     interface IGymApi
   }
 
-  package "Services" {
+  package "Services" as LayerServices {
     component "ClientService" as ClientService
     component "ScheduleService" as ScheduleService
     component "BookingService" as BookingService
@@ -31,7 +31,7 @@ rectangle "Gym System" {
     interface INotificationService
   }
 
-  package "Data Access" {
+  package "Data Access" as LayerData {
     component "ClientRepository" as ClientRepository
     component "ScheduleRepository" as ScheduleRepository
     component "BookingRepository" as BookingRepository
@@ -43,7 +43,7 @@ rectangle "Gym System" {
     interface ISubscriptionRepository
   }
 
-  package "Database" {
+  package "Database" as LayerDb {
     database "Gym Database" as DB
     interface IDatabase
   }
@@ -71,7 +71,7 @@ PG - IPaymentGateway
 ES - IEmailSending
 
 ' required interfaces: UI and API
-UI ..> IGymApi
+WebUI ..> IGymApi
 GymAPI ..> IClientService
 GymAPI ..> IScheduleService
 GymAPI ..> IBookingService
@@ -103,7 +103,7 @@ ScheduleRepository ..> IDatabase
 BookingRepository ..> IDatabase
 SubscriptionRepository ..> IDatabase
 
-' assumptions (AC-12)
+' assumptions (AC-12) and operations
 note right of GymAPI
   Перевіряє роль актора перед викликом сервісу.
   припущення, немає у вимогах lab2
