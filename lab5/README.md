@@ -8,7 +8,9 @@ UML component diagram of the gym system: components, provided and required inter
 
 ## Files:
 
-- `spec.md`: modules, interfaces, external integrations and acceptance criteria
+- `spec.md`: modules, interfaces, allowed dependencies, external integrations and acceptance criteria
 - `diagrams/`: component diagram (PlantUML source and PNG render)
 - `adr/`: architecture decision records (MADR)
-- `ai/`: AI prompts and raw AI responses
+- `ai/`: AI prompts, raw AI responses and decisions after gap analysis
+- `audit.md`: audit of discrepancies, traceability and AI errors
+- `DEFENSE.md`: defense notes
