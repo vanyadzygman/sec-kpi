@@ -14,6 +14,7 @@
 | Lab 2  | `lab2-requirements` | Вимоги та Use Cases (EARS, user stories, Gherkin) |
 | Lab 3  | `lab3-sequence`     | Взаємодія (Sequence Diagram, Mermaid)             |
 | Lab 4  | `lab4-process`      | Процес (Activity Diagram, PlantUML)               |
+| Lab 5  | `lab5-architecture` | Архітектура (Component Diagram, PlantUML)         |
 
 ## Структура
 
@@ -23,6 +24,7 @@ sec-kpi/
 ├── lab2/                ← Lab 2 (гілка lab2-requirements)
 ├── lab3/                ← Lab 3 (гілка lab3-sequence)
 ├── lab4/                ← Lab 4 (гілка lab4-process)
+├── lab5/                ← Lab 5 (гілка lab5-architecture)
 ├── LICENSE
 └── README.md
 ```
